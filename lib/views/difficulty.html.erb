@@ -4,38 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/src/css/bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="/src/css/materialize/materialize.min.css"/>
     <link rel="stylesheet" href="/src/css/custom/custom.css">
     <title>Codebreaker</title>
   </head>
   <body>
     <div class="container">
       <div class="row">
-        <div class="h1 text-center">Choose the difficulty</div>
-        <form class="center-block form-difficulty" action="/difficulty" method="post">
-          <div class="radio">
-            <label class="text-primary h4">
-              <input type="radio" name="difficulty" value="easy" checked="checked">
-              Easy
-            </label>
-          </div>
-          <div class="radio">
-            <label class="text-warning h4">
-              <input type="radio" name="difficulty" value="medium">
-              Medium
-            </label>
-          </div>
-          <div class="radio">
-            <label class="text-danger h4">
-              <input type="radio" name="difficulty" value="hard">
-              Hard
-            </label>
-          </div>
-          <div class='form-group'>
-            <button type='submit' class='btn btn-lg btn-default'>Submit</button>
-          </div>
-        </form>
+        <div class="col l6 center-block bordered-block">
+          <div class="flow-text center-align">Choose the difficulty</div>
+          <form class="center-block form-difficulty" action="/new_game" method="post">
+            <p>
+              <input type="radio" name="difficulty" value="easy" id="easy" checked="checked"/>
+              <label for="easy">Easy</label>
+            </p>
+            <p>
+              <input type="radio" name="difficulty" value="medium" id="medium"/>
+              <label for="medium">Medium</label>
+            </p>
+            <p>
+              <input type="radio" name="difficulty" value="hard" id="hard"/>
+              <label for="hard">Hard</label>
+            </p>
+            <button type='submit' class='waves-effect waves-light btn darken-3'>Submit</button>
+          </form>
+        </div>
       </div>
     </div>
+
+    <script src="/src/js/jquery-3.2.1.min.js"></script>
+    <script src="/src/js/materialize.min.js"></script>
+    <script src="/src/js/script.js"></script>
   </body>
 </html>
