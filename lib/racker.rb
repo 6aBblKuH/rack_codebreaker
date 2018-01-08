@@ -40,9 +40,13 @@ class Racker
     decode_data_from_request('game')
   end
 
+  def guesses
+    @request.cookies['guesses'] ? decode_data_from_request('guesses') : nil
+  end
+
   def continue_game(data)
     Rack::Response.new do |response|
-      refresh_game_data(data[:game].to_json, response)
+      refresh_game_data(data[:game], response)
       response.redirect('/game')
     end
   end
@@ -61,10 +65,13 @@ class Racker
   def guess
     Rack::Response.new do |response|
       @user_code = @request.params['user-code']
-      if win?
+      if false
         response.redirect('/win')
       else
-        response.set_cookie('round_answer', game.handle_guess(@user_code).to_json)
+        data = guesses || []
+        current_guess = { user_code: @user_code, match: game.handle_guess(@user_code) }
+        data << current_guess
+        response.set_cookie('guesses', data.to_json)
         refresh_game_data(make_refreshed_game_data, response)
         path = game.attempts.zero? ? '/lose' : '/game'
         response.redirect(path)
@@ -75,10 +82,7 @@ class Racker
   def new_game
     Rack::Response.new do |response|
       data = new_game_data(@request.params['difficulty'].to_sym)
-      filedata = Storage.load_file('games') || {}
-      filedata[decode_data_from_request('user_id')] = data
-      Storage.save_record('games', filedata.to_yaml )
-      refresh_game_data(data.to_json, response)
+      refresh_game_data(data, response)
       response.redirect('/game')
     end
   end
@@ -86,7 +90,6 @@ class Racker
   def hint
     Rack::Response.new do |response|
       # answer = game.hints.empty? ? 'You have not hints anymore' : game.take_a_hint!
-
     end
   end
 
@@ -107,11 +110,14 @@ class Racker
   end
 
   def refresh_game_data(data, response)
-    response.set_cookie('game', data)
+    filedata = Storage.load_file('games') || {}
+    filedata[decode_data_from_request('user_id')] = data
+    Storage.save_record('games', filedata.to_yaml )
+    response.set_cookie('game', data.to_json)
   end
 
   def make_refreshed_game_data
-    { secret_code: game.secret_code, attempts: game.attempts, hints: game.hints }.to_json
+    { secret_code: game.secret_code, attempts: game.attempts, hints: game.hints }
   end
 
   def decode_data_from_request(name)

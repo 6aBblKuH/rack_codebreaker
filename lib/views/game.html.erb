@@ -46,11 +46,30 @@
                 </div>
               </div>
             </div>
+
+            <% unless guesses.nil? %>
             <div class="row">
-              <div class="col l4">
-                <%= round_answer %>
-              </div>
+              <table class="bordered guesses highlight">
+                <thead>
+                  <tr>
+                    <th>Guess</th>
+                    <th>Code</th>
+                    <th>Matching</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% guesses.each_with_index do |guess, index| %>
+                    <tr>
+                      <th><%= index + 1 %></th>
+                      <th><%= guess['user_code'] %></th>
+                      <th><%= guess['match'] %></th>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
             </div>
+            <% end %>
+
           </div>
         </div>
       </div>

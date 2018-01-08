@@ -15,3 +15,7 @@
 .welcome-form {
   width: 250px;
 }
+
+.guesses th, .guesses td {
+  text-align: center;
+}
