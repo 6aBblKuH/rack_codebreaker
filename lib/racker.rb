@@ -25,57 +25,28 @@ class Racker
     when '/game' then view('game')
     when '/guess' then guess
     when '/hint' then hint
-    when '/win' then view('win')
+    when '/win' then win
     when '/lose' then view('lose')
     else Rack::Response.new('Not Found', 404)
     end
   end
 
+  private
   def welcome
     data = Welcome.new(@request.params['name'], @request.ip).log_in
-    data[:game] ? continue_game(data) : start_new(data[:user_id])
+    welcome_handler(data)
   end
 
-  def game_data
-    decode_data_from_request('game')
-  end
-
-  def guesses
-    @request.cookies['guesses'] ? decode_data_from_request('guesses') : nil
-  end
-
-  def continue_game(data)
+  def welcome_handler(data)
     Rack::Response.new do |response|
-      refresh_game_data(data[:game], response)
-      response.redirect('/game')
-    end
-  end
-
-  def start_new(user_id)
-    Rack::Response.new do |response|
-      response.set_cookie('user_id', user_id.to_json)
-      response.redirect('/difficulty')
-    end
-  end
-
-  def round_answer
-    @request.cookies['round_answer'] ? decode_data_from_request('round_answer') : ''
-  end
-
-  def guess
-    Rack::Response.new do |response|
-      @user_code = @request.params['user-code']
-      if false
-        response.redirect('/win')
+      response.set_cookie('user_id', data[:user_id].to_json)
+      path = if data[:game]
+        refresh_game_data(data[:game], response, data[:user_id])
+        '/game'
       else
-        data = guesses || []
-        current_guess = { user_code: @user_code, match: game.handle_guess(@user_code) }
-        data << current_guess
-        response.set_cookie('guesses', data.to_json)
-        refresh_game_data(make_refreshed_game_data, response)
-        path = game.attempts.zero? ? '/lose' : '/game'
-        response.redirect(path)
+        '/difficulty'
       end
+      response.redirect(path)
     end
   end
 
@@ -87,13 +58,47 @@ class Racker
     end
   end
 
-  def hint
+  def guess
+    @user_code = @request.params['user-code']
+    game.valid_answer?(@user_code) ? handle_guess : invalid_input
+  end
+
+  def handle_guess
     Rack::Response.new do |response|
-      # answer = game.hints.empty? ? 'You have not hints anymore' : game.take_a_hint!
+      path = if win?
+        '/win'
+      elsif game.attempts.positive?
+        current_guess = { user_code: @user_code, match: game.handle_guess(@user_code) }
+        data = make_refreshed_game_data
+        data[:guesses] << current_guess
+        refresh_game_data(data, response)
+        '/game'
+      else
+        '/lose'
+      end
+      response.delete_cookie('validation_error')
+      response.redirect(path)
     end
   end
 
-  private
+  def invalid_input
+    Rack::Response.new do |response|
+      response.set_cookie('validation_error', '')
+      response.redirect('/game')
+    end
+  end
+
+  def hint
+    Rack::Response.new do |response|
+      answer = game.take_a_hint!
+      data = make_refreshed_game_data
+      data[:used_hints].push(answer)
+      refresh_game_data(data, response)
+      delete_cookie('validation_error', response)
+      response.redirect('/game')
+    end
+  end
+
   def render(template)
     path = File.expand_path("../views/#{template}.html.erb", __FILE__)
     ERB.new(File.read(path)).result(binding)
@@ -109,19 +114,50 @@ class Racker
     data
   end
 
-  def refresh_game_data(data, response)
-    filedata = Storage.load_file('games') || {}
-    filedata[decode_data_from_request('user_id')] = data
+  def refresh_game_data(data, response, user_id = get_cookies('user_id').to_sym)
+    filedata = games_data
+    filedata[user_id] = data
     Storage.save_record('games', filedata.to_yaml )
     response.set_cookie('game', data.to_json)
   end
 
+  def clear_game_data(response)
+    filedata = games_data
+    filedata[get_cookies('user_id').to_sym] = nil
+    Storage.save_record('games', filedata.to_yaml )
+    delete_cookie('game', response)
+  end
+
   def make_refreshed_game_data
-    { secret_code: game.secret_code, attempts: game.attempts, hints: game.hints }
+    { secret_code: game.secret_code, attempts: game.attempts, hints: game.hints, used_hints: used_hints, guesses: guesses }
   end
 
   def decode_data_from_request(name)
     JSON.parse(@request.cookies[name])
+  end
+
+  def game_data
+    decode_data_from_request('game')
+  end
+
+  def games_data
+    Storage.load_file('games') || {}
+  end
+
+  def get_cookies(name)
+    @request.cookies[name] ? decode_data_from_request(name) : nil
+  end
+
+  def delete_cookie(name, response)
+    response.delete_cookie(name) if @request.cookies[name]
+  end
+
+  def guesses
+    game_data['guesses'] || []
+  end
+
+  def used_hints
+    game_data['used_hints'] || []
   end
 
   def game
@@ -130,6 +166,12 @@ class Racker
 
   def win?
     game.equal_codes?(@user_code)
+  end
+
+  def win
+    Rack::Response.new(render('win')) do |response|
+      clear_game_data(response)
+    end
   end
 
   def lose?

@@ -14,6 +14,7 @@
         <div class="col l8 center-block center-align">
           <div class="row">
             <div class="row">
+              <% if game_data %>
               <p class="flow-text">
                 You have got
                 <%= game_data['attempts'] %>
@@ -21,6 +22,7 @@
                 <%= game_data['hints'].size %>
                 hints
               </p>
+              <% end %>
             </div>
             <div class="row">
               <div class="col l6 offset-l3">
@@ -29,46 +31,70 @@
                     <div class="input-field col s12">
                       <label for="user-input">Type your guess</label>
                       <input type="text" id="user-input" placeholder="1234" name="user-code" required>
-                      <p class="center-align">4-digit number. Every digit has value between 1 and 6</p>
+                      <% if @request.cookies['validation_error'] %>
+                      <p class="center-align red-text">4-digit number. Every digit has value between 1 and 6</p>
+                      <% end %>
                     </div>
                     <div class="input-field col s12 text-center">
-                      <div class="row">
-                        <div class="col l4 offset-l2">
+                      <div class="row center-align">
+                        <div class="col l4 offset-l<%= game.hints.empty? ? '4' : '2' %>">
                           <button class="waves-effect waves-light btn darken-3" type="submit">Check</button>
                         </div>
-                        <div class="col l4 ">
+                        <% unless game.hints.empty? %>
+                        <div class="col l4">
                           <a href="/hint" class="waves-effect waves-light btn darken-3">Hint</a>
                         </div>
+                        <% end %>
                       </div>
                     </div>
                   </form>
-
                 </div>
               </div>
             </div>
 
-            <% unless guesses.nil? %>
             <div class="row">
-              <table class="bordered guesses highlight">
-                <thead>
-                  <tr>
-                    <th>Guess</th>
-                    <th>Code</th>
-                    <th>Matching</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% guesses.each_with_index do |guess, index| %>
+              <% unless guesses.empty? %>
+              <div class="col l6 offset-l1">
+                <table class="bordered guesses highlight">
+                  <thead>
                     <tr>
-                      <th><%= index + 1 %></th>
-                      <th><%= guess['user_code'] %></th>
-                      <th><%= guess['match'] %></th>
+                      <th>Guess</th>
+                      <th>Code</th>
+                      <th>Matching</th>
                     </tr>
-                  <% end %>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    <% guesses.each_with_index do |guess, index| %>
+                      <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= guess['user_code'] %></td>
+                        <td><%= guess['match'] %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+              <% end %>
+
+              <% unless used_hints.empty? %>
+              <div class="col l3">
+                <table class="bordered guesses highlight">
+                  <thead>
+                    <tr>
+                      <th>Hint</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% used_hints.each_with_index do |hint, index| %>
+                      <tr>
+                        <td><%= hint %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+              <% end %>
             </div>
-            <% end %>
 
           </div>
         </div>

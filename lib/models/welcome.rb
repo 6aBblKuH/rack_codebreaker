@@ -13,26 +13,28 @@ class Welcome
 
   def log_in
     save_new_user unless old_user?
-    games = Storage.load_file('games') || {}
-    { user_id: @cyphered_name.to_sym, game: games[@cyphered_name] }
+    games = dataOrHash('games')
+    { user_id: @cyphered_name, game: games[@cyphered_name] }
   end
 
   private
 
   def save_new_user
-    new_user = { @cyphered_name.to_sym => @name }
+    new_user = { @cyphered_name => @name }
     Storage.save_record('users', @users.merge(new_user).to_yaml)
   end
 
   def to_cypher_user_name
-    @cyphered_name ||= Digest::MD5.hexdigest("#{@name}#{@ip}")
+    @cyphered_name ||= Digest::MD5.hexdigest("#{@name}#{@ip}").to_sym
   end
 
   def old_user?
-    @users = Storage.load_file('users') || {}
+    @users = dataOrHash('users')
     @users.has_key?(to_cypher_user_name)
   end
 
-
+  def dataOrHash(name)
+    Storage.load_file(name) || {}
+  end
 end
 # a = Welcome.new('test', '127.0.0.1')
