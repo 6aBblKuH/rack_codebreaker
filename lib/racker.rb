@@ -27,6 +27,7 @@ class Racker
     when '/hint' then hint
     when '/win' then win
     when '/lose' then lose
+    when '/statistic' then statistic
     else Rack::Response.new('Not Found', 404)
     end
   end
@@ -171,21 +172,22 @@ class Racker
   def win
     Rack::Response.new(render('win')) do |response|
       clear_game_data(response)
+      user_id = get_cookies('user_id').to_sym
+      Storage.save_statistic(user_id)
     end
   end
 
   def lose
     Rack::Response.new(render('lose')) do |response|
       clear_game_data(response)
+      user_id = get_cookies('user_id').to_sym
+      Storage.save_statistic(user_id, false)
     end
   end
 
-  def save_statistic
-    old_data = Storage.load_file('statistic') || {}
-    user_id = get_cookies(user_id).to_sym
-    old_wins_count = old_data.dig(user_id, :wins_count) || 0
-    data[user_id] = { wins_count: old_wins_count + 1, date: Time.now }
-    Storage.save_record('statistic', data.to_yaml)
+  def statistic
+    @statistic = Storage.load_file('statistic')
+    @users = Storage.load_file('users')
+    view('statistic')
   end
-
 end
