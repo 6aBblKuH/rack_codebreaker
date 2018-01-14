@@ -26,7 +26,7 @@ class Racker
     when '/guess' then guess
     when '/hint' then hint
     when '/win' then win
-    when '/lose' then view('lose')
+    when '/lose' then lose
     else Rack::Response.new('Not Found', 404)
     end
   end
@@ -67,7 +67,7 @@ class Racker
     Rack::Response.new do |response|
       path = if win?
         '/win'
-      elsif game.attempts.positive?
+      elsif game.attempts > 1
         current_guess = { user_code: @user_code, match: game.handle_guess(@user_code) }
         data = make_refreshed_game_data
         data[:guesses] << current_guess
@@ -76,7 +76,7 @@ class Racker
       else
         '/lose'
       end
-      response.delete_cookie('validation_error')
+      delete_cookie('validation_error', response)
       response.redirect(path)
     end
   end
@@ -174,8 +174,18 @@ class Racker
     end
   end
 
-  def lose?
+  def lose
+    Rack::Response.new(render('lose')) do |response|
+      clear_game_data(response)
+    end
+  end
 
+  def save_statistic
+    old_data = Storage.load_file('statistic') || {}
+    user_id = get_cookies(user_id).to_sym
+    old_wins_count = old_data.dig(user_id, :wins_count) || 0
+    data[user_id] = { wins_count: old_wins_count + 1, date: Time.now }
+    Storage.save_record('statistic', data.to_yaml)
   end
 
 end
