@@ -1,2 +1,5 @@
 lib/data/*
 !lib/data/.gitignore
+lib/rspec/*
+!lib/rspec/.gitignore
+.rspec_status

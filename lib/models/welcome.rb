@@ -1,14 +1,12 @@
 require 'codebreaker'
 require 'digest'
 require './lib/models/storage'
-# require 'pry'
 
 class Welcome
 
   def initialize(name, ip)
     @name = name
     @ip = ip
-    # binding.pry
   end
 
   def log_in
@@ -37,4 +35,3 @@ class Welcome
     Storage.load_file(name) || {}
   end
 end
-# a = Welcome.new('test', '127.0.0.1')
