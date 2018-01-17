@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Welcome do
   subject { Welcome.new('test', '127.0.0.1') }
 
@@ -35,7 +37,7 @@ RSpec.describe Welcome do
       subject.instance_variable_set(:@cyphered_name, 'test')
       subject.instance_variable_set(:@name, 'test1')
       subject.instance_variable_set(:@users, {})
-      expect(Storage).to receive(:save_record).with('users', { 'test' => 'test1'}.to_yaml)
+      expect(Storage).to receive(:save_record).with('users', { 'test' => 'test1' }.to_yaml)
       subject.send(:save_new_user)
     end
   end

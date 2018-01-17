@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Storage do
   subject { Storage }
   before { stub_const('Storage::PATH', 'spec/tests_data/') }
@@ -33,7 +35,7 @@ RSpec.describe Storage do
 
   context '.save_statistic' do
     before { allow(Time).to receive(:now).and_return(0) }
-    let(:data) { { :user_id => {wins_count: 1, date: 0}} }
+    let(:data) { { user_id: { wins_count: 1, date: 0 } } }
     let(:path) { "#{subject::PATH}statistic.yml" }
 
     it 'calls truly methods' do

@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 require 'erb'
 require 'json'
 require 'codebreaker'
 require './lib/models/storage'
 Dir['./lib/models/*.rb'].each { |file| require file }
-
 
 class Racker
   attr_reader :request
@@ -33,6 +34,7 @@ class Racker
   end
 
   private
+
   def welcome
     data = Welcome.new(@request.params['name'], @request.ip).log_in
     welcome_handler(data)
@@ -42,10 +44,10 @@ class Racker
     Rack::Response.new do |response|
       response.set_cookie('user_id', data[:user_id].to_json)
       path = if data[:game]
-        refresh_game_data(data[:game], response, data[:user_id])
-        '/game'
-      else
-        '/difficulty'
+               refresh_game_data(data[:game], response, data[:user_id])
+               '/game'
+             else
+               '/difficulty'
       end
       response.redirect(path)
     end
@@ -67,15 +69,15 @@ class Racker
   def handle_guess
     Rack::Response.new do |response|
       path = if win?
-        '/win'
-      elsif game.attempts > 1
-        current_guess = { user_code: @user_code, match: game.handle_guess(@user_code) }
-        data = make_refreshed_game_data
-        data[:guesses] << current_guess
-        refresh_game_data(data, response)
-        '/game'
-      else
-        '/lose'
+               '/win'
+             elsif game.attempts > 1
+               current_guess = { user_code: @user_code, match: game.handle_guess(@user_code) }
+               data = make_refreshed_game_data
+               data[:guesses] << current_guess
+               refresh_game_data(data, response)
+               '/game'
+             else
+               '/lose'
       end
       delete_cookie('validation_error', response)
       response.redirect(path)
@@ -118,14 +120,14 @@ class Racker
   def refresh_game_data(data, response, user_id = get_cookies('user_id').to_sym)
     filedata = games_data
     filedata[user_id] = data
-    Storage.save_record('games', filedata.to_yaml )
+    Storage.save_record('games', filedata.to_yaml)
     response.set_cookie('game', data.to_json)
   end
 
   def clear_game_data(response)
     filedata = games_data
     filedata[get_cookies('user_id').to_sym] = nil
-    Storage.save_record('games', filedata.to_yaml )
+    Storage.save_record('games', filedata.to_yaml)
     delete_cookie('game', response)
   end
 

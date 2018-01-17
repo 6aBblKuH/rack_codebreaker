@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 require 'codebreaker'
 require 'digest'
 require './lib/models/storage'
 
 class Welcome
-
   def initialize(name, ip)
     @name = name
     @ip = ip
@@ -28,7 +29,7 @@ class Welcome
 
   def old_user?
     @users = dataOrHash('users')
-    @users.has_key?(to_cypher_user_name)
+    @users.key?(to_cypher_user_name)
   end
 
   def dataOrHash(name)
