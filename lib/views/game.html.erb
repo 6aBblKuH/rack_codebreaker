@@ -14,12 +14,12 @@
         <div class="col l8 center-block center-align">
           <div class="row">
             <div class="row">
-              <% if game_data %>
+              <% if helper.game_data %>
               <p class="flow-text">
                 You have got
-                <%= game_data['attempts'] %>
+                <%= helper.game_data['attempts'] %>
                 attempts and
-                <%= game_data['hints'].size %>
+                <%= helper.game_data['hints'].size %>
                 hints
               </p>
               <% end %>
@@ -31,16 +31,16 @@
                     <div class="input-field col s12">
                       <label for="user-input">Type your guess</label>
                       <input type="text" id="user-input" placeholder="1234" name="user-code" required>
-                      <% if @request.cookies['validation_error'] %>
+                      <% if request.cookies['validation_error'] %>
                       <p class="center-align red-text">4-digit number. Every digit has value between 1 and 6</p>
                       <% end %>
                     </div>
                     <div class="input-field col s12 text-center">
                       <div class="row center-align">
-                        <div class="col l4 offset-l<%= game.hints.empty? ? '4' : '2' %>">
+                        <div class="col l4 offset-l<%= helper.game.hints.empty? ? '4' : '2' %>">
                           <button class="waves-effect waves-light btn darken-3" type="submit">Check</button>
                         </div>
-                        <% unless game.hints.empty? %>
+                        <% unless helper.game.hints.empty? %>
                         <div class="col l4">
                           <a href="/hint" class="waves-effect waves-light btn darken-3">Hint</a>
                         </div>
@@ -53,7 +53,7 @@
             </div>
 
             <div class="row">
-              <% unless guesses.empty? %>
+              <% unless helper.guesses.empty? %>
               <div class="col l6 offset-l1">
                 <table class="bordered guesses highlight">
                   <thead>
@@ -64,7 +64,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <% guesses.each_with_index do |guess, index| %>
+                    <% helper.guesses.each_with_index do |guess, index| %>
                       <tr>
                         <td><%= index + 1 %></td>
                         <td><%= guess['user_code'] %></td>
@@ -76,7 +76,7 @@
               </div>
               <% end %>
 
-              <% unless used_hints.empty? %>
+              <% unless helper.used_hints.empty? %>
               <div class="col l3">
                 <table class="bordered guesses highlight">
                   <thead>
@@ -85,7 +85,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <% used_hints.each_with_index do |hint, index| %>
+                    <% helper.used_hints.each_with_index do |hint, index| %>
                       <tr>
                         <td><%= hint %></td>
                       </tr>

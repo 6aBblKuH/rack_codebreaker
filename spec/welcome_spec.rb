@@ -16,19 +16,20 @@ RSpec.describe Welcome do
     it 'calls save_new_user method' do
       allow(subject).to receive(:old_user?)
       expect(subject).to receive(:save_new_user)
-      subject.log_in
+      subject.send(:log_in)
     end
 
     it 'calls save_new_user method' do
       expect(subject).to receive(:data_or_hash).with('games').and_call_original
-      subject.log_in
+      subject.send(:log_in)
     end
 
-    it 'returns hash with user_id and game data' do
-      data = subject.log_in
-      expect(data).to be_kind_of Hash
-      expect(data[:user_id]).to eq(subject.instance_variable_get(:@chyphered_name))
-      expect(data[:game]).to eq(nil)
+    it 'sets up instance variables path and data' do
+      subject.send(:log_in)
+      expect(subject.data).to be_kind_of Hash
+      expect(subject.path).to be_kind_of String
+      expect(subject.instance_variable_get(:@chyphered_name)).to eq(subject.data[:user_id])
+      expect(subject.data[:game]).to be_nil
     end
   end
 
@@ -65,7 +66,8 @@ RSpec.describe Welcome do
   context '#data_or_hash' do
     it 'calls method for loading data and returns empty hash' do
       expect(Storage).to receive(:load_file).with('test')
-      expect(subject.send(:data_or_hash, 'test')).to eq({})
+      data = subject.send(:data_or_hash, 'test')
+      expect(data).to eq({})
     end
   end
 end
