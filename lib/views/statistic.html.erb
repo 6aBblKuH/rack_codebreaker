@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/src/css/materialize/materialize.min.css"/>
+    <link rel="stylesheet" href="/src/css/custom/custom.css">
+    <title>Codebreaker</title>
+  </head>
+  <body>
+    <div class="container center-align">
+      <div class="row">
+        <% if @statistic.empty? %>
+          Statistics should be here, but nobody seems to have played it yet
+        <% else %>
+        <div class="col l6 center-block">
+          <table class="bordered guesses highlight">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Score</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @statistic.each do |user_id, data| %>
+                <tr>
+                  <td><%= @users[user_id] %></td>
+                  <td><%= data[:wins_count] %></td>
+                  <td><%= data[:date].strftime "%Y-%m-%d %H:%M:%S" %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        <% end %>
+      </div>
+      <div class="row">
+        <a href="/" class="waves-effect waves-light btn darken-3">Home</a>
+      </div>
+    </div>
+
+    <script src="/src/js/jquery-3.2.1.min.js"></script>
+    <script src="/src/js/materialize.min.js"></script>
+    <script src="/src/js/script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/src/css/materialize/materialize.min.css"/>
+    <link rel="stylesheet" href="/src/css/custom/custom.css">
+    <title>Codebreaker</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row center-align">
+        <div class="row">
+          <img src="http://quovx4d83tr2hp1r22mgwa1m.wpengine.netdna-cdn.com/wp-content/uploads/2016/07/Game_Over-600x300.jpg" width="256">
+        </div>
+        <div class="row">
+          You lose. Secret code - <%= game_data['secret_code'].join %>
+        </div>
+        <div class="row">
+          <a href="/difficulty" class="waves-effect waves-light btn darken-3">Play again?</a>
+        </div>
+        <div class="row">
+          <a href="/statistic" class="waves-effect waves-light btn darken-3">Statistics</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

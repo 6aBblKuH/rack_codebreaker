@@ -1,0 +1,21 @@
+.form-difficulty {
+  width: 100px;
+}
+
+.center-block {
+  margin: 0auto;
+  float: none !important;
+}
+
+.bordered-block {
+  border: 1px solid #26a69a;
+  padding: 5px !important;
+}
+
+.welcome-form {
+  width: 250px;
+}
+
+.guesses th, .guesses td {
+  text-align: center;
+}
