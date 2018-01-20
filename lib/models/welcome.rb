@@ -12,7 +12,7 @@ class Welcome
 
   def log_in
     save_new_user unless old_user?
-    games = dataOrHash('games')
+    games = data_or_hash('games')
     { user_id: @cyphered_name, game: games[@cyphered_name] }
   end
 
@@ -28,11 +28,11 @@ class Welcome
   end
 
   def old_user?
-    @users = dataOrHash('users')
+    @users = data_or_hash('users')
     @users.key?(to_cypher_user_name)
   end
 
-  def dataOrHash(name)
+  def data_or_hash(name)
     Storage.load_file(name) || {}
   end
 end

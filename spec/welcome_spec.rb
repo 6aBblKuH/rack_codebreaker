@@ -20,7 +20,7 @@ RSpec.describe Welcome do
     end
 
     it 'calls save_new_user method' do
-      expect(subject).to receive(:dataOrHash).with('games').and_call_original
+      expect(subject).to receive(:data_or_hash).with('games').and_call_original
       subject.log_in
     end
 
@@ -56,16 +56,16 @@ RSpec.describe Welcome do
   end
 
   context '#old_user?' do
-    it 'calls dataOrHash method' do
-      expect(subject).to receive(:dataOrHash).with('users').and_call_original
+    it 'calls data_or_hash method' do
+      expect(subject).to receive(:data_or_hash).with('users').and_call_original
       subject.send(:old_user?)
     end
   end
 
-  context '#dataOrHash' do
+  context '#data_or_hash' do
     it 'calls method for loading data and returns empty hash' do
       expect(Storage).to receive(:load_file).with('test')
-      expect(subject.send(:dataOrHash, 'test')).to eq({})
+      expect(subject.send(:data_or_hash, 'test')).to eq({})
     end
   end
 end
