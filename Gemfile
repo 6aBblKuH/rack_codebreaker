@@ -8,9 +8,8 @@ gem 'bundler', '~> 1.16'
 gem 'codebreaker_Bavykin', '~> 0.1.4'
 gem 'materialize-sass', '~> 0.100.2'
 gem 'rack', '~> 2.0', '>= 2.0.3'
-gem 'rack-test', '~> 0.8.2'
-gem 'rubocop', '~> 0.52.1'
 group :test do
+  gem 'rubocop', '~> 0.52.1'
   gem 'rack-test', '~> 0.8.2'
   gem 'rspec', '~> 3.7'
 end

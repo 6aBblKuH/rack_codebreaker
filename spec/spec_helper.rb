@@ -2,6 +2,7 @@
 
 require 'bundler/setup'
 Dir['./lib/models/*.rb'].each { |file| require file }
+require './lib/racker'
 
 
 RSpec.configure do |config|
