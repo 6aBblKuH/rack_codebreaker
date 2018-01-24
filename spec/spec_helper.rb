@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
-require_relative '../lib/models/storage.rb'
-require_relative '../lib/models/welcome.rb'
+Dir['./lib/models/*.rb'].each { |file| require file }
+require './lib/racker'
+
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

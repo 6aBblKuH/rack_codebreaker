@@ -5,15 +5,19 @@ require 'digest'
 require './lib/models/storage'
 
 class Welcome
+  attr_reader :data, :path
+
   def initialize(name, ip)
     @name = name
     @ip = ip
   end
 
+
   def log_in
     save_new_user unless old_user?
-    games = dataOrHash('games')
-    { user_id: @cyphered_name, game: games[@cyphered_name] }
+    games = data_or_hash('games')
+    @data = { user_id: @cyphered_name, game: games[@cyphered_name] }
+    @path = data[:game] ? '/game' : '/difficulty'
   end
 
   private
@@ -28,11 +32,11 @@ class Welcome
   end
 
   def old_user?
-    @users = dataOrHash('users')
+    @users = data_or_hash('users')
     @users.key?(to_cypher_user_name)
   end
 
-  def dataOrHash(name)
+  def data_or_hash(name)
     Storage.load_file(name) || {}
   end
 end
